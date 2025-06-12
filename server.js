@@ -14,7 +14,7 @@ const io = socketio(server);
 // * Seguridad *
 
 // Solo ocultar “X-Powered-By” (no usar setTo siempre)
-app.use(helmet.hidePoweredBy());
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
 
 // Evitar que el navegador adivine el tipo MIME (req. 16)
 app.use(helmet.noSniff());
