@@ -17,7 +17,7 @@ Player.prototype.movePlayer = function(direction, amount) {
 Player.prototype.calculateRank = function(players) {
   const sorted = [...players].sort((a, b) => b.score - a.score);
   const rank = sorted.findIndex(p => p.id === this.id) + 1;
-  return Rank: ${rank}/${players.length};
+  return `Rank: ${rank}/${players.length}`;
 };
 
 Player.prototype.collision = function(item) {
