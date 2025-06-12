@@ -3,8 +3,8 @@ const http = require('http');
 const socketio = require('socket.io');
 const helmet = require('helmet');
 const path = require('path');
-const Player = require('./classes/Player.mjs');
-const Collectible = require('./classes/Collectible.mjs');
+const Player = require('./classes/Player');
+const Collectible = require('./classes/Collectible');
 
 const app = express();
 const server = http.createServer(app);
