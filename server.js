@@ -11,18 +11,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// Seguridad requerida por freeCodeCamp
-app.use(helmet({ contentSecurityPolicy: false }));
+// ✅ Seguridad requerida por freeCodeCamp (en orden correcto)
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
 app.use(helmet.noSniff());
 app.use(helmet.xssFilter());
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
+app.use(helmet({ contentSecurityPolicy: false }));
 
+// Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Jugadores y objetos
 const players = {};
 const collectibles = {};
 let nextCollectibleId = 1;
@@ -33,6 +35,7 @@ function createCollectible() {
   return item;
 }
 
+// Conexión de jugadores
 io.on('connection', (socket) => {
   const player = new Player(socket.id);
   players[socket.id] = player;
@@ -68,11 +71,13 @@ io.on('connection', (socket) => {
 
 createCollectible();
 
+// Página principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Inicializar servidor
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(Server running on port ${PORT});
 });
