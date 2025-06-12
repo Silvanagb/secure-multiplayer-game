@@ -14,7 +14,10 @@ const io = socketio(server);
 // * Seguridad *
 
 // Solo ocultar “X-Powered-By” (no usar setTo siempre)
-app.use(helmet.hidePoweredBy({ setTo: 'PHP 7.4.3' }));
+app.use((req, res, next) => {
+  res.setHeader('X-Powered-By', 'PHP 7.4.3');
+  next();
+});
 
 // Evitar que el navegador adivine el tipo MIME (req. 16)
 app.use(helmet.noSniff());
@@ -29,9 +32,6 @@ app.use((req, res, next) => {
   res.setHeader('Expires', '0');
   next();
 });
-
-// No uso expreso de contentSecurityPolicy pero Helmet ya lo incluye con defaults.
-app.use(helmet());
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
