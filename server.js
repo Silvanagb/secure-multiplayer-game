@@ -12,9 +12,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // Seguridad requerida por freeCodeCamp
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(helmet.noSniff());
 app.use(helmet.xssFilter());
 app.use((req, res, next) => {
@@ -41,3 +39,40 @@ io.on('connection', (socket) => {
 
   socket.emit('currentPlayers', players);
   socket.emit('collectibles', collectibles);
+  socket.broadcast.emit('newPlayer', player);
+
+  socket.on('move', (direction) => {
+    player.movePlayer(direction, 5);
+    for (let id in collectibles) {
+      if (player.collision(collectibles[id])) {
+        player.score += collectibles[id].value;
+        delete collectibles[id];
+        createCollectible();
+      }
+    }
+
+    io.emit('playerMoved', {
+      id: socket.id,
+      x: player.x,
+      y: player.y,
+      score: player.score,
+      rank: player.calculateRank(Object.values(players))
+    });
+  });
+
+  socket.on('disconnect', () => {
+    delete players[socket.id];
+    io.emit('playerDisconnected', socket.id);
+  });
+});
+
+createCollectible();
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(Server running on port ${PORT});
+});
