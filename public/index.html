@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multiplayer Game</title>
+    <style>
+      body { margin: 0; overflow: hidden; background: #111; color: white; font-family: sans-serif; }
+      canvas { display: block; background: #222; margin: auto; }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module">
+      const socket = io();
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const players = {};
+      const collectibles = {};
+
+      socket.on('currentPlayers', (serverPlayers) => {
+        Object.assign(players, serverPlayers);
+      });
+
+      socket.on('newPlayer', (player) => {
+        players[player.id] = player;
+      });
+
+      socket.on('playerDisconnected', (id) => {
+        delete players[id];
+      });
+
+      socket.on('playerMoved', ({ id, x, y, score, rank }) => {
+        if (players[id]) {
+          players[id].x = x;
+          players[id].y = y;
+          players[id].score = score;
+          players[id].rank = rank;
+        }
+      });
+
+      socket.on('collectibles', (serverItems) => {
+        Object.assign(collectibles, serverItems);
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let id in players) {
+          const p = players[id];
+          ctx.fillStyle = "cyan";
+          ctx.fillRect(p.x, p.y, 20, 20);
+          ctx.fillText(`Score: ${p.score}`, p.x, p.y - 10);
+          ctx.fillText(p.rank || '', p.x, p.y - 22);
+        }
+        for (let id in collectibles) {
+          const c = collectibles[id];
+          ctx.fillStyle = "gold";
+          ctx.fillRect(c.x, c.y, 10, 10);
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      document.addEventListener('keydown', (e) => {
+        const directions = {
+          ArrowUp: 'up',
+          ArrowDown: 'down',
+          ArrowLeft: 'left',
+          ArrowRight: 'right',
+          w: 'up',
+          s: 'down',
+          a: 'left',
+          d: 'right'
+        };
+        const dir = directions[e.key];
+        if (dir) socket.emit('move', dir);
+      });
+    </script>
+  </body>
+</html>

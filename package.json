@@ -1,0 +1,17 @@
+{
+  "name": "secure-multiplayer-game",
+  "version": "1.0.0",
+  "description": "Real Time Multiplayer Game for freeCodeCamp",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "helmet": "^3.21.3"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
