@@ -36,6 +36,17 @@ app.use((req, res, next) => {
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Ruta principal con headers que validan los puntos 16-19
+app.get('/', (req, res) => {
+  res.setHeader('X-Powered-By', 'PHP 7.4.3');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Datos del juego
 const players = {};
 const collectibles = {};
