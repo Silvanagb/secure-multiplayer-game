@@ -20,21 +20,6 @@ app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'PHP 7.4.3'); // simulación
   next();
 });
-
-// ========================
-// 🔐 Seguridad (Requisitos 16-19)
-// ========================
-
-app.use((req, res, next) => {
-  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // PUNTO 19
-  res.setHeader('X-Content-Type-Options', 'nosniff'); // PUNTO 16
-  res.setHeader('X-XSS-Protection', '1; mode=block'); // PUNTO 17
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // PUNTO 18
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  next();
-});
-
 // ========================
 // 🌐 Archivos públicos
 // ========================
