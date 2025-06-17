@@ -11,21 +11,21 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// * Seguridad *
+// ========================
+// 🔐 Seguridad (16-19)
+// ========================
 
-// Solo ocultar “X-Powered-By” (no usar setTo siempre)
+// Encabezado falso: "PHP 7.4.3" (punto 19)
 app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'PHP 7.4.3');
   next();
 });
 
-// Evitar que el navegador adivine el tipo MIME (req. 16)
+// Helmet 3.21.3: proteger MIME (16) y XSS (17)
 app.use(helmet.noSniff());
-
-// Prevención de XSS básico (req. 17)
 app.use(helmet.xssFilter());
 
-// Cache cero (req. 18)
+// Desactivar caché (punto 18)
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -33,21 +33,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir archivos estáticos
+// ========================
+// 🌐 Rutas y archivos estáticos
+// ========================
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta principal con headers que validan los puntos 16-19
 app.get('/', (req, res) => {
-  res.setHeader('X-Powered-By', 'PHP 7.4.3');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Datos del juego
+// ========================
+// 🕹️ Lógica del juego
+// ========================
 const players = {};
 const collectibles = {};
 let nextCollectibleId = 1;
@@ -92,10 +89,9 @@ io.on('connection', socket => {
 
 createCollectible();
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+// ========================
+// 🚀 Servidor
+// ========================
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
