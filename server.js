@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
-const helmet = require('helmet');
 const path = require('path');
 
 const Player = require('./classes/Player.js');
@@ -12,29 +11,20 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // ========================
-// 🔐 Seguridad (16-19)
+// 🔐 Seguridad (puntos 16 a 19)
 // ========================
-
-// Encabezado falso: "PHP 7.4.3" (punto 19)
 app.use((req, res, next) => {
-  res.setHeader('X-Powered-By', 'PHP 7.4.3');
-  next();
-});
-
-// Helmet 3.21.3: proteger MIME (16) y XSS (17)
-app.use(helmet.noSniff());
-app.use(helmet.xssFilter());
-
-// Desactivar caché (punto 18)
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // 19
+  res.setHeader('X-Content-Type-Options', 'nosniff'); // 16
+  res.setHeader('X-XSS-Protection', '1; mode=block'); // 17
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // 18
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   next();
 });
 
 // ========================
-// 🌐 Rutas y archivos estáticos
+// 🌐 Archivos estáticos
 // ========================
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -43,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 // ========================
-// 🕹️ Lógica del juego
+// 🕹️ Juego
 // ========================
 const players = {};
 const collectibles = {};
