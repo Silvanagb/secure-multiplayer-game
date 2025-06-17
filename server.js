@@ -11,20 +11,25 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // ========================
-// 🔐 Seguridad (puntos 16 a 19)
+// 🔐 Seguridad (puntos 16–19)
 // ========================
+
+// Eliminar el encabezado real de Express
+app.disable('x-powered-by');
+
+// Agregar encabezados manualmente para cumplir los requisitos
 app.use((req, res, next) => {
-  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // 19
-  res.setHeader('X-Content-Type-Options', 'nosniff'); // 16
-  res.setHeader('X-XSS-Protection', '1; mode=block'); // 17
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // 18
+  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // punto 19
+  res.setHeader('X-Content-Type-Options', 'nosniff'); // punto 16
+  res.setHeader('X-XSS-Protection', '1; mode=block'); // punto 17
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // punto 18
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   next();
 });
 
 // ========================
-// 🌐 Archivos estáticos
+// 🌐 Archivos estáticos y ruta principal
 // ========================
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -33,7 +38,7 @@ app.get('/', (req, res) => {
 });
 
 // ========================
-// 🕹️ Juego
+// 🕹️ Lógica del juego
 // ========================
 const players = {};
 const collectibles = {};
@@ -80,7 +85,7 @@ io.on('connection', socket => {
 createCollectible();
 
 // ========================
-// 🚀 Servidor
+// 🚀 Iniciar el servidor
 // ========================
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
