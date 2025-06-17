@@ -11,25 +11,21 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // ========================
-// 🔐 Seguridad (puntos 16–19)
+// 🔐 Seguridad (Requisitos 16-19)
 // ========================
 
-// Eliminar el encabezado real de Express
-app.disable('x-powered-by');
-
-// Agregar encabezados manualmente para cumplir los requisitos
 app.use((req, res, next) => {
-  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // punto 19
-  res.setHeader('X-Content-Type-Options', 'nosniff'); // punto 16
-  res.setHeader('X-XSS-Protection', '1; mode=block'); // punto 17
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // punto 18
+  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // PUNTO 19
+  res.setHeader('X-Content-Type-Options', 'nosniff'); // PUNTO 16
+  res.setHeader('X-XSS-Protection', '1; mode=block'); // PUNTO 17
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); // PUNTO 18
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   next();
 });
 
 // ========================
-// 🌐 Archivos estáticos y ruta principal
+// 🌐 Archivos públicos
 // ========================
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -38,7 +34,7 @@ app.get('/', (req, res) => {
 });
 
 // ========================
-// 🕹️ Lógica del juego
+// 🎮 Lógica del juego
 // ========================
 const players = {};
 const collectibles = {};
@@ -85,9 +81,9 @@ io.on('connection', socket => {
 createCollectible();
 
 // ========================
-// 🚀 Iniciar el servidor
+// 🚀 Iniciar servidor
 // ========================
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
