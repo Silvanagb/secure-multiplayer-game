@@ -1,3 +1,4 @@
+
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
@@ -9,6 +10,16 @@ const Collectible = require('./classes/Collectible.js');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('X-Powered-By', 'PHP 7.4.3'); // simulación
+  next();
+});
 
 // ========================
 // 🔐 Seguridad (Requisitos 16-19)
